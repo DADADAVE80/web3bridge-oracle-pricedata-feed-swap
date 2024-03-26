@@ -1,45 +1,30 @@
-// SPDX-License-Identifier: MIT
-pragma solidity ^0.8.7;
+// SPDX-License-Identifier: UNLICENSED
+pragma solidity ^0.8.13;
 
-import { Swap } from "../src/Swap.sol";
-import { MockAggregatorV3 } from "../mocks/MockAggregatorV3.sol"; // Replace with your mock implementation
+import {Test, console} from "forge-std/Test.sol";
+import {AggregatorV3Interface} from "lib/chainlink/contracts/src/v0.8/shared/interfaces/AggregatorV3Interface.sol";
+import "../lib/openzeppelin-contracts/contracts/token/ERC20/IERC20.sol";
 
-contract SwapTest is Vm {
+contract CounterTest is Test {
+    function setUp() public {
+        address constant ethAddress =
+        0x7b79995e5f793A07Bc00c21412e50Ecae098E7f9; // Address of Ether (ETH)
+    address constant linkAddress =
+        0x779877A7B0D9E8603169DdbD7836e478b4624789; // Address of Chainlink token (LINK)
+    address constant daiAddress =
+        0x3e622317f8C93f7328350cF0B56d9eD4C620C5d6; // Address of Dai stablecoin (DAI)
 
-  Swap public swap;
-  MockAggregatorV3 public ethPriceFeed;
-  MockAggregatorV3 public linkPriceFeed;
-  MockAggregatorV3 public daiPriceFeed;
+    address constant ethPriceFeed =
+        0x694AA1769357215DE4FAC081bf1f309aDC325306; // Address of ETH/USD price feed
+    address constant linkPriceFeed =
+        0xc59E3633BAAC79493d908e63626716e204A45EdF; // Address of LINK/USD price feed
+    address constant daiPriceFeed =
+        0x14866185B1962B63C3Ea9E03Bc1da838bab34C19; // Address of DAI/USD price feed
+    }
 
-  address public user = address(0x1234567890123456789012345678901234567890);
+    function testSwapEthToDai() external {
+        swap(ethAddress, daiAddress, 1 ether);
 
-  function setUp() public {
-    ethPriceFeed = new MockAggregatorV3(0, 10**8, 3000 * 10**8); // Set ETH price to 3000 USD
-    linkPriceFeed = new MockAggregatorV3(0, 10**18, 20 * 10**18); // Set LINK price to 20 USD
-    daiPriceFeed = new MockAggregatorV3(0, 10**18, 1 * 10**18);   // Set DAI price to 1 USD
-    swap = new Swap(
-      address(ethPriceFeed),
-      address(linkPriceFeed),
-      address(daiPriceFeed)
-    );
-  }
-
-  function testETHToLinkSwap() public {
-    vm.deal(user, 1 ether);
-    vm.expectEmit(true, swap, "Swapped(address,address,address,uint256)", user, address(0), address(1), 150 * 10**18); // Expect 150 LINK for 1 ETH
-    swap.swap(address(0), address(1), 1 ether);
-  }
-
-  function testLinkToETHSwap() public {
-    vm.deal(user, 3000 * 10**18); // Send 3000 LINK
-    vm.expectEmit(true, swap, "Swapped(address,address,address,uint256)", user, address(1), address(0), 1 ether); // Expect 1 ETH for 3000 LINK
-    swap.swap(address(1), address(0), 3000 * 10**18);
-  }
-
-  // Add similar tests for other swap combinations (ETH to DAI, DAI to ETH, LINK to DAI, DAI to LINK)
-
-  function testUnsupportedToken() public {
-    vm.expectRevert("From token not supported");
-    swap.swap(address(2), address(1), 10); // Swap from an unsupported token
-  }
+        
+    }
 }

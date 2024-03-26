@@ -12,11 +12,11 @@ contract Swap {
     address public constant daiAddress =
         0xFF34B3d4Aee8ddCd6F9AFFFB6Fe49bD371b8a357; // Address of Dai stablecoin (DAI)
 
-    mapping(address => bool) public supportedTokens;
-
     address constant ethPriceFeed = 0x694AA1769357215DE4FAC081bf1f309aDC325306; // Address of ETH/USD price feed
     address constant linkPriceFeed = 0xc59E3633BAAC79493d908e63626716e204A45EdF; // Address of LINK/USD price feed
     address constant daiPriceFeed = 0x14866185B1962B63C3Ea9E03Bc1da838bab34C19; // Address of DAI/USD price feed
+
+    mapping(address => bool) public supportedTokens;
 
     event Swapped(
         address indexed user,
@@ -48,7 +48,8 @@ contract Swap {
                 "Failed to transfer WETH tokens"
             );
 
-            uint256 amountOut = getLatestPrice(ethPriceFeed, linkPriceFeed);
+            uint256 amountOut = _amount *
+                getLatestPrice(ethPriceFeed, linkPriceFeed);
 
             require(
                 IERC20(linkAddress).transfer(msg.sender, amountOut),
@@ -67,7 +68,8 @@ contract Swap {
                 "Failed to transfer LINK tokens"
             );
 
-            uint256 amountOut = getLatestPrice(linkPriceFeed, ethPriceFeed);
+            uint256 amountOut = _amount *
+                getLatestPrice(linkPriceFeed, ethPriceFeed);
 
             require(
                 IERC20(wethAddress).transfer(msg.sender, amountOut),
@@ -86,7 +88,8 @@ contract Swap {
                 "Failed to transfer WETH tokens"
             );
 
-            uint256 amountOut = getLatestPrice(ethPriceFeed, daiPriceFeed);
+            uint256 amountOut = _amount *
+                getLatestPrice(ethPriceFeed, daiPriceFeed);
 
             require(
                 IERC20(daiAddress).transfer(msg.sender, amountOut),
@@ -105,7 +108,8 @@ contract Swap {
                 "Failed to transfer DAI tokens"
             );
 
-            uint256 amountOut = getLatestPrice(daiPriceFeed, ethPriceFeed);
+            uint256 amountOut = _amount *
+                getLatestPrice(daiPriceFeed, ethPriceFeed);
 
             require(
                 IERC20(wethAddress).transfer(msg.sender, amountOut),
@@ -124,7 +128,8 @@ contract Swap {
                 "Failed to transfer LINK tokens"
             );
 
-            uint256 amountOut = getLatestPrice(linkPriceFeed, daiPriceFeed);
+            uint256 amountOut = _amount *
+                getLatestPrice(linkPriceFeed, daiPriceFeed);
 
             require(
                 IERC20(daiAddress).transfer(msg.sender, amountOut),
@@ -143,7 +148,8 @@ contract Swap {
                 "Failed to transfer DAI tokens"
             );
 
-            uint256 amountOut = getLatestPrice(daiPriceFeed, linkPriceFeed);
+            uint256 amountOut = _amount *
+                getLatestPrice(daiPriceFeed, linkPriceFeed);
 
             require(
                 IERC20(linkAddress).transfer(msg.sender, amountOut),
@@ -154,10 +160,6 @@ contract Swap {
         } else {
             revert("Invalid swap");
         }
-    }
-
-    receive() external payable {
-        // Fallback function to receive ETH
     }
 
     function getLatestPrice(
